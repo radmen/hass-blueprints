@@ -17,7 +17,7 @@ blueprint:
       selector:
         target:
           entity:
-            integration: notify
+            domain: notify
     alert_delay:
       name: Alert Delay
       description: How long to wait before sending notification
@@ -35,8 +35,7 @@ actions:
 - variables:
     tag: '{{ ''TAG_door_alert_'' ~ context.id }}'
     action_ack: '{{ ''ACK_door_alert_'' ~ context.id }}'
-- service: notify.notify
-  target: !input notification_target
+- action: !input notification_target
   data:
     title: Alert
     message: Drzwi wejściowe są otwarte
