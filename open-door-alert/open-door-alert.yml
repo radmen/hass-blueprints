@@ -20,6 +20,11 @@ blueprint:
       default: "00:05:00"
       selector:
         duration: {}
+    door_name:
+      name: Door Name
+      description: Name of the door (will be used in notifications)
+      selector:
+        text: {}
 triggers:
 - trigger: state
   entity_id: !input door_sensor
@@ -31,10 +36,11 @@ actions:
 - variables:
     tag: '{{ ''TAG_door_alert_'' ~ context.id }}'
     action_ack: '{{ ''ACK_door_alert_'' ~ context.id }}'
+    door_name: !input door_name
 - action: !input notification_target
   data:
     title: Alert
-    message: Drzwi wejściowe są otwarte
+    message: '{{ door_name }} są otwarte'
     data:
       tag: '{{ tag }}'
       actions:
@@ -57,6 +63,6 @@ actions:
     title: Alert
     data:
       tag: '{{ tag }}'
-    message: Drzwi wejściowe są zamknięte
+    message: '{{ door_name }} są zamknięte'
 mode: single
 
