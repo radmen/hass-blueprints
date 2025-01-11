@@ -13,9 +13,7 @@ blueprint:
               device_class: door
     notification_target:
       name: Notification Target
-      description: Who should be notified about opened doors
-      selector:
-        action:
+      description: Name of the `notify.*` action
     alert_delay:
       name: Alert Delay
       description: How long to wait before sending notification
