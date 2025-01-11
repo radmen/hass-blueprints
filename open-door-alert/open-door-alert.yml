@@ -15,11 +15,8 @@ blueprint:
       name: Notification Target
       description: Who should be notified about opened doors
       selector:
-        target:
-          entity:
-            domain:
-              - notify
-              - mobile_app
+        entity:
+          integration: notify
     alert_delay:
       name: Alert Delay
       description: How long to wait before sending notification
