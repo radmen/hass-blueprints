@@ -39,8 +39,8 @@ actions:
     door_name: !input door_name
 - action: !input notification_target
   data:
-    title: Alert
-    message: '{{ door_name }} są otwarte'
+    title: '🚪 Alert'
+    message: '❌ {{ door_name }} są otwarte!'
     data:
       tag: '{{ tag }}'
       actions:
@@ -60,9 +60,9 @@ actions:
 - action: !input notification_target
   metadata: {}
   data:
-    title: Alert
+    title: '🚪 Alert'
+    message: '✅ {{ door_name }} są zamknięte'
     data:
       tag: '{{ tag }}'
-    message: '{{ door_name }} są zamknięte'
 mode: single
 
