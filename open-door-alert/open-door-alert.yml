@@ -1,0 +1,69 @@
+blueprint:
+  name: Opened doors alert
+  description: Notify when doors are opened
+  domain: automation
+  input:
+    door_sensor:
+      name: Door Sensor
+      description: This sensor will detect if door are closed/opened
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+              device_class: door
+    notification_target:
+      name: Notification Target
+      description: Who should be notified about opened doors
+      selector:
+        target:
+          entity:
+            domain:
+              - notify
+              - mobile_app
+    alert_delay:
+      name: Alert Delay
+      description: How long to wait before sending notification
+      default: "00:05:00"
+      selector:
+        duration: {}
+triggers:
+- trigger: state
+  entity_id: !input door_sensor
+  from: 'off'
+  to: 'on'
+  for: !input alert_delay
+conditions: []
+actions:
+- variables:
+    tag: '{{ ''TAG_door_alert_'' ~ context.id }}'
+    action_ack: '{{ ''ACK_door_alert_'' ~ context.id }}'
+- action: !input notification_target
+  metadata: {}
+  data:
+    title: Alert
+    message: Drzwi wejściowe są otwarte
+    data:
+      tag: '{{ tag }}'
+      actions:
+      - action: '{{ action_ack }}'
+        title: Ignoruj
+- wait_for_trigger:
+  - trigger: state
+    entity_id: !input door_sensor
+    to: 'off'
+  - trigger: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: '{{ action_ack }}'
+- condition: state
+  entity_id: !input door_sensor
+  state: 'off'
+- action: !input notification_target
+  metadata: {}
+  data:
+    title: Alert
+    data:
+      tag: '{{ tag }}'
+    message: Drzwi wejściowe są zamknięte
+mode: single
+
