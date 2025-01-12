@@ -17,19 +17,20 @@ A Home Assistant automation blueprint that sends notifications when doors are le
 - **Door Sensor**: Binary sensor with door device class that will be monitored
 - **Notification Target**: The notification service or mobile app that should receive alerts
 - **Alert Delay**: Duration to wait before sending the open door notification (default: 5 minutes)
+- **Door Name**: Custom name for the door that will be used in notifications
 
 ### Notifications
 
 The blueprint sends two types of notifications:
 
 1. When door is left open (after specified delay):
-   - Title: "Alert"
-   - Message: "Drzwi wejściowe są otwarte" (Front door is open)
-   - Includes an "Ignore" action button
+     - Title: "🚪 Alert"
+     - Message: "[Door name] są otwarte!" (Door is open)
+     - Includes an "Ignoruj" (Ignore) action button
 
 2. When door is closed:
-   - Title: "Alert"
-   - Message: "Drzwi wejściowe są zamknięte" (Front door is closed)
+     - Title: "🚪 Alert"
+     - Message: "[Door name] są zamknięte" (Door is closed)
 
 ## Installation
 
