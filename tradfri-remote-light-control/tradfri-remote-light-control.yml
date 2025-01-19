@@ -1,0 +1,157 @@
+blueprint:
+  name: IKEA Tradfri Remote Light Control
+  description: Control lights with IKEA Tradfri remote
+  domain: automation
+  input:
+    remote_device:
+      name: Remote Device
+      description: Select your IKEA remote device
+      selector:
+        device:
+          integration: mqtt
+    light_entity:
+      name: Light
+      description: Light to control
+      selector:
+        entity:
+          domain: light
+    brightness_step:
+      name: Brightness Step
+      description: Percentage to increase/decrease brightness (1-100)
+      default: 25
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    delay_time:
+      name: Delay Time
+      description: Time before turning off lights when using left/right hold
+      default: "00:01:00"
+      selector:
+        duration:
+          enable_day: false
+          minimum: "00:00:01"
+          maximum: "01:00:00"
+
+trigger:
+  - domain: mqtt
+    device_id: !input remote_device
+    type: action
+    subtype: toggle
+    trigger: device
+    id: toggle
+  - domain: mqtt
+    device_id: !input remote_device
+    type: action
+    subtype: brightness_up_click
+    trigger: device
+    id: up
+  - domain: mqtt
+    device_id: !input remote_device
+    type: action
+    subtype: brightness_down_click
+    trigger: device
+    id: down
+  - domain: mqtt
+    device_id: !input remote_device
+    type: action
+    subtype: brightness_down_hold
+    trigger: device
+    id: down_hold
+  - domain: mqtt
+    device_id: !input remote_device
+    type: action
+    subtype: brightness_up_hold
+    trigger: device
+    id: up_hold
+  - domain: mqtt
+    device_id: !input remote_device
+    type: action
+    subtype: arrow_left_hold
+    trigger: device
+    id: left_hold
+  - domain: mqtt
+    device_id: !input remote_device
+    type: action
+    subtype: arrow_right_hold
+    trigger: device
+    id: right_hold
+
+action:
+  - variables:
+      brightness_step: !input brightness_step
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - toggle
+        sequence:
+          - action: light.toggle
+            target:
+              entity_id: !input light_entity
+      - conditions:
+          - condition: trigger
+            id:
+              - up
+        sequence:
+          - action: light.turn_on
+            data:
+              brightness_step_pct: !input brightness_step
+            target:
+              entity_id: !input light_entity
+      - conditions:
+          - condition: trigger
+            id:
+              - down
+        sequence:
+          - action: light.turn_on
+            data:
+              brightness: >
+                {% set current = state_attr(this.entity_id, 'brightness') %}
+                {% set next = current * ((100 - brightness_step) / 100) %}
+                {% if next < 25.5 %}
+                  25
+                {% else %}
+                  {{ next | round }}
+                {% endif %}
+            target:
+              entity_id: !input light_entity
+      - conditions:
+          - condition: trigger
+            id:
+              - down_hold
+        sequence:
+          - action: light.turn_on
+            data:
+              brightness_pct: 10
+            target:
+              entity_id: !input light_entity
+      - conditions:
+          - condition: trigger
+            id:
+              - up_hold
+        sequence:
+          - action: light.turn_on
+            data:
+              brightness_pct: 100
+            target:
+              entity_id: !input light_entity
+      - conditions:
+          - condition: trigger
+            id:
+              - left_hold
+              - right_hold
+        sequence:
+          - action: light.turn_on
+            data:
+              brightness_pct: 90
+            target:
+              entity_id: !input light_entity
+          - delay:
+              seconds: !input delay_time
+          - action: light.turn_off
+            target:
+              entity_id: !input light_entity
+
+mode: single
