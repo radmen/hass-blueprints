@@ -79,6 +79,7 @@ trigger:
 action:
   - variables:
       brightness_step: !input brightness_step
+      light_entity: !input light_entity
   - choose:
       - conditions:
           - condition: trigger
@@ -106,7 +107,7 @@ action:
           - action: light.turn_on
             data:
               brightness: >
-                {% set current = state_attr(this.entity_id, 'brightness') %}
+                {% set current = state_attr(light_entity, 'brightness') %}
                 {% set next = current * ((100 - brightness_step) / 100) %}
                 {% if next < 25.5 %}
                   25
