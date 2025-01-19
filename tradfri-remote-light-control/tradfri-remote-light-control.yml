@@ -31,8 +31,6 @@ blueprint:
       selector:
         duration:
           enable_day: false
-          minimum: "00:00:01"
-          maximum: "01:00:00"
 
 trigger:
   - domain: mqtt
