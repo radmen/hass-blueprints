@@ -146,8 +146,7 @@ action:
               brightness_pct: 90
             target:
               entity_id: !input light_entity
-          - delay:
-              seconds: !input delay_time
+          - delay: !input delay_time
           - action: light.turn_off
             target:
               entity_id: !input light_entity
